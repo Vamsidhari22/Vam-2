@@ -1,0 +1,153 @@
+"""
+All OpenAI prompts for the Marketing Dashboard API.
+"""
+
+# ──────────────────────────────────────────────────────────────
+# TREND REPORT
+# ──────────────────────────────────────────────────────────────
+
+TREND_REPORT_SYSTEM = (
+    "You are an expert marketing analyst with deep knowledge of digital trends, "
+    "consumer behaviour, and market dynamics. You provide comprehensive, data-driven "
+    "trend reports that are actionable for businesses."
+)
+
+TREND_REPORT_PROMPT = """Search the internet for the latest trends related to: {topic}
+
+Create a comprehensive marketing trend report that includes:
+
+## Executive Summary
+Brief overview of the current trend landscape (2-3 sentences).
+
+## Top 5 Current Trends
+For each trend provide:
+- Trend name and brief description
+- Why it's gaining traction
+- Any notable data or statistics
+
+## Key Insights
+- 3-5 important observations about the current market
+- Consumer behaviour patterns
+- Platform-specific trends where relevant
+
+## Target Audience Analysis
+- Who is driving these trends
+- Demographics and psychographics
+- Platform preferences
+
+## Opportunities for Businesses
+- 3-5 actionable opportunities
+- How businesses can leverage these trends
+
+## Recommendations
+- Immediate actions (this week / month)
+- Medium-term strategy (3-6 months)
+- Long-term considerations
+
+Keep the tone professional but engaging. Base your answer on current information from your web search."""
+
+
+# ──────────────────────────────────────────────────────────────
+# AESTHETICS ANALYSIS
+# ──────────────────────────────────────────────────────────────
+
+AESTHETICS_ANALYSIS_PROMPT = """Analyse the following website content and identify the brand's complete aesthetic profile. Be specific and detailed.
+
+Website URL: {url}
+Page Title: {title}
+Meta Description: {meta_description}
+Website Content / Text: {content}
+
+Return ONLY a valid JSON object — no markdown fences, no extra text — with exactly these keys:
+
+{{
+  "brand_name": "extracted or inferred brand name",
+  "industry": "specific industry / niche",
+  "color_palette": {{
+    "primary": "primary brand colour (hex or descriptive)",
+    "secondary": "secondary colour",
+    "accent": "accent colour",
+    "background": "background colour",
+    "mood_description": "describe the colour palette mood"
+  }},
+  "visual_style": "detailed description of visual style (modern, minimalist, luxury, playful, etc.)",
+  "brand_mood": "emotional tone and feeling (sophisticated, friendly, energetic, calming, etc.)",
+  "brand_voice": "communication style (professional, casual, inspiring, authoritative, etc.)",
+  "target_audience": "specific description of target demographic",
+  "key_themes": ["theme1", "theme2", "theme3"],
+  "search_keywords": [
+    "specific image-search query 1",
+    "specific image-search query 2",
+    "specific image-search query 3",
+    "specific image-search query 4",
+    "specific image-search query 5"
+  ],
+  "aesthetic_tags": ["tag1", "tag2", "tag3", "tag4", "tag5"]
+}}
+
+For search_keywords generate highly specific, image-search-optimised phrases that will surface photos matching this brand's aesthetic — consider lighting, composition, colour grading, and subject matter."""
+
+
+# ──────────────────────────────────────────────────────────────
+# INSTAGRAM POST GENERATION
+# ──────────────────────────────────────────────────────────────
+
+SOCIAL_MEDIA_POST_PROMPT = """You are a creative social media strategist who specialises in brand-aligned Instagram content.
+
+Create an engaging Instagram post for a business with the following brand profile:
+
+Brand Name: {brand_name}
+Industry: {industry}
+Visual Style: {visual_style}
+Brand Mood: {brand_mood}
+Brand Voice: {brand_voice}
+Target Audience: {target_audience}
+Key Themes: {key_themes}
+
+Selected Images:
+{image_descriptions}
+
+Guidelines:
+1. Authentically represent the brand's voice and aesthetic.
+2. Engage the specific target audience.
+3. Drive meaningful action.
+4. Use storytelling, emojis, and line breaks for Instagram readability.
+
+Return ONLY a valid JSON object — no markdown fences, no extra text:
+
+{{
+  "caption": "Engaging Instagram caption with storytelling, emojis, and natural line breaks (150-300 characters).",
+  "hashtags": ["hashtag1", "hashtag2", "hashtag3", "hashtag4", "hashtag5", "hashtag6", "hashtag7", "hashtag8", "hashtag9", "hashtag10"],
+  "cta": "Clear call-to-action (e.g. 'Book now', 'Link in bio', 'Tag a friend')",
+  "story_idea": "Brief idea for an Instagram Story to accompany this post"
+}}"""
+
+
+# ──────────────────────────────────────────────────────────────
+# DALL-E 3 INSTAGRAM IMAGE PROMPT BUILDER
+# ──────────────────────────────────────────────────────────────
+
+INSTAGRAM_IMAGE_PROMPT = """You are an expert at writing DALL-E 3 image generation prompts for Instagram marketing.
+
+Create a detailed, optimised DALL-E 3 prompt for an Instagram post image for the following brand:
+
+Brand Name: {brand_name}
+Industry: {industry}
+Visual Style: {visual_style}
+Brand Mood: {brand_mood}
+Colour Palette: {color_palette}
+Target Audience: {target_audience}
+Key Themes: {key_themes}
+
+Inspiration from selected images:
+{image_descriptions}
+
+Requirements for the prompt:
+- Describe a photorealistic, high-quality image perfectly suited for a square Instagram post
+- Incorporate the brand's exact colour palette and visual aesthetic
+- Evoke the brand's mood and appeal strongly to the target audience
+- Specify lighting style, composition, depth of field, and atmosphere
+- DO NOT include any text, words, logos, or watermarks in the image
+- Make it visually striking and scroll-stopping
+
+Return ONLY the DALL-E prompt text — nothing else, no preamble, no explanation."""
