@@ -1,4 +1,4 @@
-import { Check, RefreshCw, ArrowRight, ImageIcon } from 'lucide-react'
+import { Check, RefreshCw, ArrowRight } from 'lucide-react'
 
 export default function ImageGallery({
   images,
@@ -77,14 +77,6 @@ export default function ImageGallery({
           )
         })}
       </div>
-
-      {/* Empty images */}
-      {images.length === 0 && (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-gray-800 py-12">
-          <ImageIcon className="mb-3 text-gray-700" size={32} />
-          <p className="text-sm text-gray-600">No images found. Try searching again.</p>
-        </div>
-      )}
 
       {/* CTA */}
       {selectedCount > 0 && (

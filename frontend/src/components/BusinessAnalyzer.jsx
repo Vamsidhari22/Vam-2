@@ -25,7 +25,7 @@ function AestheticsCard({ aesthetics }) {
                 key={i}
                 title={s}
                 className="h-7 w-7 rounded-full border border-gray-700 shadow-inner"
-                style={{ background: s.startsWith('#') ? s : undefined, backgroundColor: s.startsWith('#') ? undefined : s }}
+                style={{ backgroundColor: s }}
               />
             ))}
           </div>
