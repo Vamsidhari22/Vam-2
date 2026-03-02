@@ -129,9 +129,10 @@ async def generate_posts(request: PostRequest):
         # ── Step 2: Build an optimised DALL-E prompt ─────────────
         dalle_prompt = _build_image_prompt(client, model, aesthetics, image_descriptions)
 
-        # ── Step 3: Generate the image with DALL-E 3 ─────────────
+        # ── Step 3: Generate the image ────────────────────────────
+        image_model = os.getenv("IMAGE_MODEL", "dall-e-3")
         image_resp = client.images.generate(
-            model="dall-e-3",
+            model=image_model,
             prompt=dalle_prompt,
             size="1024x1024",
             quality="hd",

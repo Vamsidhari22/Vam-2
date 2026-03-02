@@ -36,7 +36,7 @@ async def analyze_trends(request: TrendRequest):
         response = client.responses.create(
             model=model,
             instructions=TREND_REPORT_SYSTEM,
-            tools=[{"type": "web_search_preview"}],
+            tools=[{"type": "web_search"}],
             input=prompt,
         )
 
