@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
@@ -6,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from routers import aesthetics, posts, trends
 
-load_dotenv()
+load_dotenv(Path(__file__).with_name(".env"))
 
 app = FastAPI(
     title="Marketing Dashboard API",

@@ -15,6 +15,14 @@ def get_client() -> OpenAI:
     return OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
+def _get_env_or_default(name: str, default: str) -> str:
+    value = os.getenv(name)
+    if value is None:
+        return default
+    value = value.strip()
+    return value or default
+
+
 # ──────────────────────────────────────────────────────────────
 # Pydantic models
 # ──────────────────────────────────────────────────────────────
@@ -95,7 +103,7 @@ async def generate_posts(request: PostRequest):
 
     try:
         client = get_client()
-        model = os.getenv("OPENAI_MODEL", "gpt-4o")
+        model = _get_env_or_default("OPENAI_MODEL", "gpt-4o")
 
         # ── Step 1: Generate Instagram caption JSON ──────────────
         caption_prompt = SOCIAL_MEDIA_POST_PROMPT.format(
@@ -130,16 +138,25 @@ async def generate_posts(request: PostRequest):
         dalle_prompt = _build_image_prompt(client, model, aesthetics, image_descriptions)
 
         # ── Step 3: Generate the image ────────────────────────────
-        image_model = os.getenv("IMAGE_MODEL", "dall-e-3")
+        image_model = _get_env_or_default("IMAGE_MODEL", "gpt-image-1")
+        default_quality = "hd" if image_model.startswith("dall-e-3") else "high"
+        image_quality = _get_env_or_default("IMAGE_QUALITY", default_quality)
+
         image_resp = client.images.generate(
             model=image_model,
             prompt=dalle_prompt,
             size="1024x1024",
-            quality="hd",
+            quality=image_quality,
             n=1,
         )
-        image_url = image_resp.data[0].url
-        revised_prompt = image_resp.data[0].revised_prompt or dalle_prompt
+
+        image_data = image_resp.data[0]
+        image_url = getattr(image_data, "url", None)
+        if not image_url and getattr(image_data, "b64_json", None):
+            # GPT Image models may return base64 instead of a hosted URL.
+            image_url = f"data:image/png;base64,{image_data.b64_json}"
+
+        revised_prompt = getattr(image_data, "revised_prompt", None) or dalle_prompt
 
         return {
             "status": "success",

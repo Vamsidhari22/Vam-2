@@ -167,29 +167,35 @@ function InstagramPost({ data, imageUrl, imagePrompt }) {
   )
 }
 
-export default function PostGenerator({ aestheticsData, selectedImages }) {
-  const [result, setResult] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
+export default function PostGenerator({ aestheticsData, selectedImages, state, setState }) {
+  const { result, loading, error } = state
 
   const canGenerate = aestheticsData && selectedImages?.length > 0
 
   const handleGenerate = async () => {
     if (!canGenerate) return
-    setLoading(true)
-    setError(null)
-    setResult(null)
+    setState((prev) => ({
+      ...prev,
+      loading: true,
+      error: null,
+      result: null,
+    }))
 
     try {
       const data = await generatePosts(aestheticsData, selectedImages)
-      setResult(data)
+      setState((prev) => ({
+        ...prev,
+        result: data,
+        loading: false,
+      }))
     } catch (err) {
-      setError(
-        err.response?.data?.detail ||
+      setState((prev) => ({
+        ...prev,
+        error:
+          err.response?.data?.detail ||
           'Failed to generate post. Please try again.',
-      )
-    } finally {
-      setLoading(false)
+        loading: false,
+      }))
     }
   }
 

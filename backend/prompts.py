@@ -7,28 +7,35 @@ All OpenAI prompts for the Marketing Dashboard API.
 # ──────────────────────────────────────────────────────────────
 
 TREND_REPORT_SYSTEM = (
-    "You are an expert marketing analyst with deep knowledge of digital trends, "
-    "consumer behaviour, and market dynamics. You provide comprehensive, data-driven "
-    "trend reports that are actionable for businesses."
+    "You are an expert social media strategist and trend analyst with deep knowledge "
+    "of platform culture, creator behavior, audience engagement patterns, and brand "
+    "content strategy. You produce concise, current, actionable reports focused only "
+    "on social media trends that businesses can turn into posts."
 )
 
-TREND_REPORT_PROMPT = """Search the internet for the latest trends related to: {topic}
+TREND_REPORT_PROMPT = """Search the internet for the latest social media trends related to: {topic}
 
-Create a comprehensive marketing trend report that includes:
+Create a social-media-focused trend report for a business in this topic or industry.
+Focus specifically on trends happening on social platforms such as Instagram, TikTok,
+X, YouTube, LinkedIn, Pinterest, Reddit, or platform-native creator ecosystems.
+Do not include general business, economic, or cultural trends unless they are clearly
+showing up as social media content trends.
 
 ## Executive Summary
-Brief overview of the current trend landscape (2-3 sentences).
+Brief overview of the current social media trend landscape (2-3 sentences).
 
-## Top 5 Current Trends
+## Top 5 Social Media Trends
 For each trend provide:
 - Trend name and brief description
-- Why it's gaining traction
-- Any notable data or statistics
+- Primary platforms where it is showing up
+- Why it's gaining traction on social media right now
+- Any notable signals, examples, or statistics if available
+- 2-3 post ideas a business could create based on this trend
 
 ## Key Insights
-- 3-5 important observations about the current market
-- Consumer behaviour patterns
-- Platform-specific trends where relevant
+- 3-5 important observations about current social content behaviour
+- Audience engagement or creator behaviour patterns
+- Platform-specific differences where relevant
 
 ## Target Audience Analysis
 - Who is driving these trends
@@ -37,12 +44,18 @@ For each trend provide:
 
 ## Opportunities for Businesses
 - 3-5 actionable opportunities
-- How businesses can leverage these trends
+- How businesses can leverage these trends in social content
 
 ## Recommendations
-- Immediate actions (this week / month)
+- Immediate actions (this week / month) for social media teams
 - Medium-term strategy (3-6 months)
 - Long-term considerations
+
+Formatting requirements:
+- Return the answer in clean markdown
+- Use clear headings and bullet points
+- Under each trend, include a subheading called "Post Ideas"
+- Make the post ideas specific, practical, and easy to execute for a business
 
 Keep the tone professional but engaging. Base your answer on current information from your web search."""
 

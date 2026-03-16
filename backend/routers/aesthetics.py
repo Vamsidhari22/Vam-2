@@ -168,8 +168,7 @@ def search_unsplash_images(keywords: List[str], target: int = 9) -> List[dict]:
         except Exception:
             continue  # Skip failed keyword searches
 
-    # Ensure 6-10 images
-    return images[: max(target, 6)]
+    return images[:target]
 
 
 # ──────────────────────────────────────────────────────────────

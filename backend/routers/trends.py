@@ -31,16 +31,21 @@ async def analyze_trends(request: TrendRequest):
         client = get_client()
         model = os.getenv("OPENAI_MODEL", "gpt-4o")
         prompt = TREND_REPORT_PROMPT.format(topic=request.topic.strip())
+        report_text = None
+        last_error = None
+        try:
+            response = client.responses.create(
+                model=model,
+                instructions=TREND_REPORT_SYSTEM,
+                tools=[{"type": "web_search_preview"}],
+                input=prompt,
+            )
+            report_text = response.output_text
+        except Exception as exc:
+            last_error = exc
 
-        # Use the Responses API with live web search
-        response = client.responses.create(
-            model=model,
-            instructions=TREND_REPORT_SYSTEM,
-            tools=[{"type": "web_search"}],
-            input=prompt,
-        )
-
-        report_text = response.output_text
+        if not report_text:
+            raise last_error or RuntimeError("No trend report was generated.")
 
         return TrendResponse(report=report_text, topic=request.topic.strip())
 

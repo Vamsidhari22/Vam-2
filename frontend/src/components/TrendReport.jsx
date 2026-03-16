@@ -4,38 +4,43 @@ import ReactMarkdown from 'react-markdown'
 import { analyzeTrends } from '../api/client'
 
 const SUGGESTIONS = [
-  'Sustainable fashion',
-  'AI in marketing',
-  'Short-form video',
-  'DTC e-commerce',
-  'Mental wellness apps',
+  'Beauty brands on TikTok',
+  'Instagram trends for cafes',
+  'LinkedIn content for SaaS',
+  'Fitness creators and Reels',
+  'Food trends on social media',
 ]
 
-export default function TrendReport() {
-  const [topic, setTopic] = useState('')
-  const [report, setReport] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
+export default function TrendReport({ state, setState }) {
+  const { topic, report, loading, error } = state
   const [copied, setCopied] = useState(false)
 
   const handleAnalyze = async (t = topic) => {
     const trimmed = t.trim()
     if (!trimmed) return
-    setTopic(trimmed)
-    setLoading(true)
-    setError(null)
-    setReport(null)
+    setState((prev) => ({
+      ...prev,
+      topic: trimmed,
+      loading: true,
+      error: null,
+      report: null,
+    }))
 
     try {
       const data = await analyzeTrends(trimmed)
-      setReport(data)
+      setState((prev) => ({
+        ...prev,
+        report: data,
+        loading: false,
+      }))
     } catch (err) {
-      setError(
-        err.response?.data?.detail ||
+      setState((prev) => ({
+        ...prev,
+        error:
+          err.response?.data?.detail ||
           'Failed to generate the trend report. Please try again.',
-      )
-    } finally {
-      setLoading(false)
+        loading: false,
+      }))
     }
   }
 
@@ -52,9 +57,9 @@ export default function TrendReport() {
         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-600/15">
           <TrendingUp className="text-indigo-400" size={26} />
         </div>
-        <h1 className="text-3xl font-bold text-white">Trend Report Generator</h1>
+        <h1 className="text-3xl font-bold text-white">Social Media Trend Report</h1>
         <p className="mx-auto mt-2 max-w-lg text-gray-400">
-          Search the internet for the latest marketing trends in any industry or topic
+          Search the internet for the latest social media trends and get ready-to-use post ideas
         </p>
       </div>
 
@@ -69,9 +74,11 @@ export default function TrendReport() {
             <input
               type="text"
               value={topic}
-              onChange={(e) => setTopic(e.target.value)}
+              onChange={(e) =>
+                setState((prev) => ({ ...prev, topic: e.target.value }))
+              }
               onKeyDown={(e) => e.key === 'Enter' && handleAnalyze()}
-              placeholder="e.g. sustainable fashion, SaaS marketing, food delivery…"
+              placeholder="e.g. coffee shops on Instagram, skincare on TikTok, B2B thought leadership..."
               className="w-full rounded-xl border border-gray-800 bg-gray-900 py-3.5 pl-11 pr-4 text-white placeholder-gray-600 transition focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
             />
           </div>
@@ -125,7 +132,7 @@ export default function TrendReport() {
             <div>
               <p className="font-medium text-white">Searching the internet…</p>
               <p className="mt-1 text-sm text-gray-500">
-                Analysing trends for "{topic}"
+                Analysing social media trends for "{topic}"
               </p>
             </div>
           </div>
@@ -138,7 +145,7 @@ export default function TrendReport() {
           {/* Card header */}
           <div className="flex items-center justify-between border-b border-gray-800 px-6 py-4">
             <div>
-              <p className="font-semibold text-white">Trend Report</p>
+              <p className="font-semibold text-white">Social Media Trend Report</p>
               <p className="mt-0.5 text-sm text-gray-500">Topic: {report.topic}</p>
             </div>
             <button
@@ -172,7 +179,7 @@ export default function TrendReport() {
       {!report && !loading && !error && (
         <div className="mx-auto max-w-4xl rounded-2xl border border-dashed border-gray-800 p-14 text-center">
           <TrendingUp className="mx-auto mb-3 text-gray-700" size={36} />
-          <p className="text-gray-600">Enter a topic above to generate a live trend report</p>
+          <p className="text-gray-600">Enter a topic above to generate a live social media trend report</p>
         </div>
       )}
     </div>

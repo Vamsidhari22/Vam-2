@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Globe, Loader2, AlertCircle, Palette, Users, Megaphone, Tag } from 'lucide-react'
 import ImageGallery from './ImageGallery'
 import { analyzeAesthetics, searchImages } from '../api/client'
@@ -90,74 +89,88 @@ function AestheticsCard({ aesthetics }) {
 }
 
 export default function BusinessAnalyzer({
+  state,
+  setState,
   onAestheticsFound,
   aestheticsData,
   images,
   setImages,
+  selectedImages,
+  setSelectedImages,
   onImagesSelected,
 }) {
-  const [url, setUrl] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [imageLoading, setImageLoading] = useState(false)
-  const [error, setError] = useState(null)
-
-  // Track selected images as a Map<id, imageObject>
-  const [selectedMap, setSelectedMap] = useState(new Map())
+  const { url, loading, imageLoading, error } = state
+  const selectedIds = new Set(selectedImages.map((img) => img.id))
 
   const handleAnalyze = async () => {
     const trimmed = url.trim()
     if (!trimmed) return
 
-    setLoading(true)
-    setError(null)
-    setSelectedMap(new Map())
+    setState((prev) => ({
+      ...prev,
+      url: trimmed,
+      loading: true,
+      error: null,
+    }))
+    setSelectedImages([])
 
     try {
       const data = await analyzeAesthetics(trimmed)
       onAestheticsFound(data.aesthetics)
       setImages(data.images)
+      setState((prev) => ({
+        ...prev,
+        loading: false,
+      }))
     } catch (err) {
-      setError(
-        err.response?.data?.detail ||
+      setState((prev) => ({
+        ...prev,
+        error:
+          err.response?.data?.detail ||
           'Failed to analyse the website. Check the URL and try again.',
-      )
-    } finally {
-      setLoading(false)
+        loading: false,
+      }))
     }
   }
 
   const handleSearchAgain = async () => {
     if (!aestheticsData) return
-    setImageLoading(true)
-    setSelectedMap(new Map())
+    setState((prev) => ({
+      ...prev,
+      imageLoading: true,
+      error: null,
+    }))
+    setSelectedImages([])
 
     try {
       const keywords =
         aestheticsData.search_keywords || aestheticsData.aesthetic_tags || []
       const data = await searchImages(keywords, aestheticsData)
       setImages(data.images)
+      setState((prev) => ({
+        ...prev,
+        imageLoading: false,
+      }))
     } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to refresh images.')
-    } finally {
-      setImageLoading(false)
+      setState((prev) => ({
+        ...prev,
+        error: err.response?.data?.detail || 'Failed to refresh images.',
+        imageLoading: false,
+      }))
     }
   }
 
   const handleToggleImage = (img) => {
-    setSelectedMap((prev) => {
-      const next = new Map(prev)
-      if (next.has(img.id)) {
-        next.delete(img.id)
-      } else {
-        next.set(img.id, img)
+    setSelectedImages((prev) => {
+      if (prev.some((selected) => selected.id === img.id)) {
+        return prev.filter((selected) => selected.id !== img.id)
       }
-      return next
+      return [...prev, img]
     })
   }
 
   const handleGeneratePost = () => {
-    const selected = Array.from(selectedMap.values())
-    onImagesSelected(selected)
+    onImagesSelected(selectedImages)
   }
 
   return (
@@ -184,7 +197,9 @@ export default function BusinessAnalyzer({
             <input
               type="url"
               value={url}
-              onChange={(e) => setUrl(e.target.value)}
+              onChange={(e) =>
+                setState((prev) => ({ ...prev, url: e.target.value }))
+              }
               onKeyDown={(e) => e.key === 'Enter' && handleAnalyze()}
               placeholder="https://yourbusiness.com"
               className="w-full rounded-xl border border-gray-800 bg-gray-900 py-3.5 pl-11 pr-4 text-white placeholder-gray-600 transition focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
@@ -236,7 +251,7 @@ export default function BusinessAnalyzer({
 
           <ImageGallery
             images={images}
-            selectedIds={new Set(selectedMap.keys())}
+            selectedIds={selectedIds}
             onToggle={handleToggleImage}
             onSearchAgain={handleSearchAgain}
             onGeneratePost={handleGeneratePost}
