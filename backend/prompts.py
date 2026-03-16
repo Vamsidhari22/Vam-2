@@ -59,6 +59,59 @@ Formatting requirements:
 
 Keep the tone professional but engaging. Base your answer on current information from your web search."""
 
+TREND_REPORT_BUSINESS_PROMPT = """Search the internet for the latest social media trends related to: {topic}
+
+Create a social-media-focused trend report for {brand_name}, a business in the {industry} industry.
+
+## Business Context
+- Brand Name: {brand_name}
+- Industry: {industry}
+- Brand Voice: {brand_voice}
+- Target Audience: {target_audience}
+- Key Themes: {key_themes}
+
+For EACH trend you identify, provide 2-3 specific POST IDEAS that this business ({brand_name}) can actually create and post. The post ideas must:
+- Be directly relevant to this specific business and its target audience
+- Align with the brand's voice and tone
+- Leverage the brand's key themes and industry
+- Be practical and easy for the business to execute
+
+Focus specifically on trends happening on social platforms such as Instagram, TikTok, X, YouTube, LinkedIn, Pinterest, Reddit, or platform-native creator ecosystems.
+Do not include general business, economic, or cultural trends unless they are clearly showing up as social media content trends.
+
+## Executive Summary
+Brief overview of the current social media trend landscape for the {industry} industry (2-3 sentences).
+
+## Top 5 Social Media Trends for {brand_name}
+For each trend provide:
+- Trend name and brief description
+- Primary platforms where it is showing up
+- Why it's gaining traction on social media right now
+- Any notable signals, examples, or statistics if available
+- 2-3 post ideas specific to {brand_name} that connect to this trend (must reference brand voice, audience, industry context)
+
+## Key Insights
+- 3-5 important observations about current social content behaviour that apply to the {industry} space
+- Audience engagement or creator behaviour patterns relevant to {brand_name}'s target audience
+- Platform-specific differences where relevant
+
+## Opportunities for {brand_name}
+- 3-5 actionable opportunities specific to this business
+- How {brand_name} can leverage these trends in social content given their brand positioning
+
+## Recommendations
+- Immediate actions (this week / month) for {brand_name}'s social media team
+- Medium-term strategy (3-6 months) tailored to {brand_name}'s business model
+- Long-term considerations for the {industry} space
+
+Formatting requirements:
+- Return the answer in clean markdown
+- Use clear headings and bullet points
+- Make the post ideas specific, practical, and tied to {brand_name}'s brand voice and industry
+- Ensure post ideas are NOT generic but account for the business context
+
+Keep the tone professional but engaging. Base your answer on current information from your web search."""
+
 
 # ──────────────────────────────────────────────────────────────
 # AESTHETICS ANALYSIS

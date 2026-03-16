@@ -98,6 +98,7 @@ export default function BusinessAnalyzer({
   selectedImages,
   setSelectedImages,
   onImagesSelected,
+  onGenerateTrends,
 }) {
   const { url, loading, imageLoading, error } = state
   const selectedIds = new Set(selectedImages.map((img) => img.id))
@@ -171,6 +172,12 @@ export default function BusinessAnalyzer({
 
   const handleGeneratePost = () => {
     onImagesSelected(selectedImages)
+  }
+
+  const handleGenerateTrendsClick = () => {
+    if (aestheticsData) {
+      onGenerateTrends(aestheticsData)
+    }
   }
 
   return (
@@ -257,6 +264,16 @@ export default function BusinessAnalyzer({
             onGeneratePost={handleGeneratePost}
             loading={imageLoading}
           />
+
+          {/* Action buttons */}
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <button
+              onClick={handleGenerateTrendsClick}
+              className="flex-1 rounded-xl border border-indigo-700/60 bg-indigo-900/20 py-3 font-medium text-indigo-300 transition hover:bg-indigo-900/40"
+            >
+              📊 Generate Trend Report for This Business
+            </button>
+          </div>
         </div>
       )}
 

@@ -16,6 +16,8 @@ const DEFAULT_STATE = {
     report: null,
     loading: false,
     error: null,
+    businessContext: null,
+    autoRun: false,
   },
   analyzerState: {
     url: '',
@@ -41,7 +43,7 @@ function loadInitialState() {
     return {
       ...DEFAULT_STATE,
       ...saved,
-      trendState: { ...DEFAULT_STATE.trendState, ...saved.trendState, loading: false },
+      trendState: { ...DEFAULT_STATE.trendState, ...saved.trendState, loading: false, autoRun: false },
       analyzerState: {
         ...DEFAULT_STATE.analyzerState,
         ...saved.analyzerState,
@@ -58,7 +60,7 @@ function loadInitialState() {
 function buildPersistedState(state) {
   const next = {
     ...state,
-    trendState: { ...state.trendState, loading: false },
+    trendState: { ...state.trendState, loading: false, autoRun: false },
     analyzerState: {
       ...state.analyzerState,
       loading: false,
@@ -166,6 +168,20 @@ export default function App() {
     setActiveTab('posts')
   }
 
+  // Called when the user clicks "Generate Trend Report for This Business"
+  const handleGenerateTrendsForBusiness = (aesthetics) => {
+    const topic = `${aesthetics.industry} for ${aesthetics.brand_name}`
+    setTrendState((prev) => ({
+      ...prev,
+      topic,
+      businessContext: aesthetics,
+      autoRun: true,
+      report: null,
+      error: null,
+    }))
+    setActiveTab('trends')
+  }
+
   return (
     <div className="min-h-screen bg-gray-950">
       <Navbar
@@ -176,7 +192,11 @@ export default function App() {
 
       <main className="mx-auto max-w-7xl px-4 py-10">
         <div className={activeTab === 'trends' ? 'block' : 'hidden'}>
-          <TrendReport state={trendState} setState={setTrendState} />
+          <TrendReport
+            state={trendState}
+            setState={setTrendState}
+            businessContext={trendState.businessContext}
+          />
         </div>
 
         <div className={activeTab === 'analyzer' ? 'block' : 'hidden'}>
@@ -190,6 +210,7 @@ export default function App() {
             selectedImages={selectedImages}
             setSelectedImages={setSelectedImages}
             onImagesSelected={handleImagesSelected}
+            onGenerateTrends={handleGenerateTrendsForBusiness}
           />
         </div>
 

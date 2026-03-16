@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Search, TrendingUp, Copy, Check, Loader2, AlertCircle } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import { analyzeTrends } from '../api/client'
@@ -11,11 +11,11 @@ const SUGGESTIONS = [
   'Food trends on social media',
 ]
 
-export default function TrendReport({ state, setState }) {
-  const { topic, report, loading, error } = state
+export default function TrendReport({ state, setState, businessContext }) {
+  const { topic, report, loading, error, autoRun, businessContext: stateBusinessContext } = state
   const [copied, setCopied] = useState(false)
 
-  const handleAnalyze = async (t = topic) => {
+  const handleAnalyze = async (t = topic, aesthetics = null) => {
     const trimmed = t.trim()
     if (!trimmed) return
     setState((prev) => ({
@@ -27,7 +27,7 @@ export default function TrendReport({ state, setState }) {
     }))
 
     try {
-      const data = await analyzeTrends(trimmed)
+      const data = await analyzeTrends(trimmed, aesthetics)
       setState((prev) => ({
         ...prev,
         report: data,
@@ -42,6 +42,24 @@ export default function TrendReport({ state, setState }) {
         loading: false,
       }))
     }
+  }
+
+  // Auto-run when navigated from Business Analyzer
+  useEffect(() => {
+    if (autoRun && topic && !report && !loading) {
+      handleAnalyze(topic, stateBusinessContext)
+      setState((prev) => ({ ...prev, autoRun: false }))
+    }
+  }, [autoRun, topic])
+
+  const handleClearBusinessContext = () => {
+    setState((prev) => ({
+      ...prev,
+      businessContext: null,
+      topic: '',
+      report: null,
+      error: null,
+    }))
   }
 
   const handleCopy = () => {
@@ -59,9 +77,26 @@ export default function TrendReport({ state, setState }) {
         </div>
         <h1 className="text-3xl font-bold text-white">Social Media Trend Report</h1>
         <p className="mx-auto mt-2 max-w-lg text-gray-400">
-          Search the internet for the latest social media trends and get ready-to-use post ideas
+          {stateBusinessContext
+            ? `Trends tailored for ${stateBusinessContext.brand_name} — ${stateBusinessContext.industry}`
+            : 'Search the internet for the latest social media trends and get ready-to-use post ideas'}
         </p>
       </div>
+
+      {/* Business context badge */}
+      {stateBusinessContext && (
+        <div className="mx-auto max-w-2xl flex items-center justify-between gap-3 rounded-xl border border-indigo-800/40 bg-indigo-900/15 px-4 py-3">
+          <div className="text-sm text-indigo-300">
+            <span className="font-semibold">📊 Tailored for:</span> {stateBusinessContext.brand_name} ({stateBusinessContext.industry})
+          </div>
+          <button
+            onClick={handleClearBusinessContext}
+            className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-1.5 text-xs text-gray-400 transition hover:bg-gray-700 hover:text-white"
+          >
+            Switch to General Mode
+          </button>
+        </div>
+      )}
 
       {/* Search */}
       <div className="mx-auto max-w-2xl space-y-3">
@@ -77,13 +112,13 @@ export default function TrendReport({ state, setState }) {
               onChange={(e) =>
                 setState((prev) => ({ ...prev, topic: e.target.value }))
               }
-              onKeyDown={(e) => e.key === 'Enter' && handleAnalyze()}
+              onKeyDown={(e) => e.key === 'Enter' && handleAnalyze(topic, stateBusinessContext)}
               placeholder="e.g. coffee shops on Instagram, skincare on TikTok, B2B thought leadership..."
               className="w-full rounded-xl border border-gray-800 bg-gray-900 py-3.5 pl-11 pr-4 text-white placeholder-gray-600 transition focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
             />
           </div>
           <button
-            onClick={() => handleAnalyze()}
+            onClick={() => handleAnalyze(topic, stateBusinessContext)}
             disabled={loading || !topic.trim()}
             className="flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-3.5 font-medium text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-gray-800 disabled:text-gray-600"
           >
@@ -102,18 +137,20 @@ export default function TrendReport({ state, setState }) {
         </div>
 
         {/* Suggestions */}
-        <div className="flex flex-wrap gap-2">
-          {SUGGESTIONS.map((s) => (
-            <button
-              key={s}
-              onClick={() => handleAnalyze(s)}
-              disabled={loading}
-              className="rounded-full border border-gray-800 bg-gray-900 px-3 py-1 text-xs text-gray-400 transition hover:border-indigo-500 hover:text-white disabled:opacity-40"
-            >
-              {s}
-            </button>
-          ))}
-        </div>
+        {!stateBusinessContext && (
+          <div className="flex flex-wrap gap-2">
+            {SUGGESTIONS.map((s) => (
+              <button
+                key={s}
+                onClick={() => handleAnalyze(s, null)}
+                disabled={loading}
+                className="rounded-full border border-gray-800 bg-gray-900 px-3 py-1 text-xs text-gray-400 transition hover:border-indigo-500 hover:text-white disabled:opacity-40"
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Error */}

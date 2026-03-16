@@ -12,10 +12,11 @@ const api = axios.create({
 /**
  * Feature 1 — Generate a trend report for a topic using OpenAI web search.
  * @param {string} topic
+ * @param {object} [aesthetics] - Optional business aesthetics for tailored trends
  * @returns {Promise<{ report: string, topic: string }>}
  */
-export const analyzeTrends = async (topic) => {
-  const { data } = await api.post('/trends/analyze', { topic })
+export const analyzeTrends = async (topic, aesthetics = null) => {
+  const { data } = await api.post('/trends/analyze', { topic, aesthetics })
   return data
 }
 
